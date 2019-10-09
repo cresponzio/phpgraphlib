@@ -35,6 +35,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
+---
+FORK by Antonio Sau 09 October 2019
+
+I fixed some small bugs that gave error and did not show the graph, 
+in particular a warning about an error variable (not initialized) and the
+conversion of some values in float that did not allow the system to run the script
+#line 481 and line 1034
+
 */
 
 class PHPGraphLib {
@@ -378,7 +386,8 @@ class PHPGraphLib {
 		foreach ($this->data_array as $data_set_num => $data_set) {
 			$lineX2 = null;
 			reset($data_set);
-			$xStart = $this->y_axis_x1 + ($this->space_width / 2) + ((key($data_set) - $this->lowest_x) * ($this->bar_width + $this->space_width));
+			// line updated ( it convert the value in float, otherwise the script gives an error message, maybe it doesn't recognize some null value and can't create the graph )
+			$xStart = floatval($this->y_axis_x1) + ( floatval($this->space_width) / 2) + ( (  floatval(key($data_set) ) - floatval($this->lowest_x) ) * ( floatval($this->bar_width) + floatval($this->space_width) ) );
 			foreach ($data_set as $key => $item) {
 				$hideBarOutline = false;
 
@@ -923,7 +932,7 @@ class PHPGraphLib {
 
 	protected function displayErrors() 
 	{
-		if (count($this->error) > 0) {
+		if( $this->error &&  count($this->error) > 0) {
 			$lineHeight = 12;
 			$errorColor = imagecolorallocate($this->image, 0, 0, 0);
 			$errorBackColor = imagecolorallocate($this->image, 255, 204, 0);
@@ -982,9 +991,13 @@ class PHPGraphLib {
 				$this->data_count = $count;
 			}
 		}
-		$this->lowest_x = $low_x;
-		$this->highest_x = $high_x;
-		$raw_size = $high_x - $low_x +1;
+		// line updated ( it convert the value in float, otherwise the script gives an error message, maybe it doesn't recognize some null value and can't create the graph )
+		$this->lowest_x = floatval($low_x);
+		$this->highest_x = floatval ($high_x);
+	
+		$raw_size = floatval($high_x) - floatval($low_x) +1;
+	
+
 		if ($raw_size > $this->data_count) {
 			$this->data_count = $raw_size;
 		}
@@ -1621,3 +1634,4 @@ class PHPGraphLib {
 		}	
 	}
 }
+
